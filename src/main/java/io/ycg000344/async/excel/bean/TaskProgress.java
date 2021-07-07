@@ -1,6 +1,7 @@
 package io.ycg000344.async.excel.bean;
 
 import cn.hutool.json.JSONUtil;
+import io.ycg000344.async.excel.util.AsyncExcelUtils;
 import lombok.Builder;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -17,15 +18,11 @@ public class TaskProgress {
 
 
     public void update(RedisTemplate redisTemplate) {
-        redisTemplate.opsForValue().set(key(), value(), timeout());
+        redisTemplate.opsForValue().set(AsyncExcelUtils.taskProgressRedisKey(this.taskInfo.getTaskId()), value(), timeout());
     }
 
     private Duration timeout() {
         return Duration.ofHours(1l);
-    }
-
-    private String key() {
-        return String.format("async:excel:%s", this.taskInfo.getTaskId());
     }
 
     private String value() {

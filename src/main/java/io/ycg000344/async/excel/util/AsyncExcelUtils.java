@@ -22,4 +22,9 @@ public class AsyncExcelUtils {
                 .build()
                 .update(redisTemplate);
     }
+
+    public static String taskProgressRedisKey(String taskId) {
+        return String.format("async:excel:%s", taskId);
+    }
+
 }

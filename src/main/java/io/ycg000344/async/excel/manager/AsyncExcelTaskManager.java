@@ -8,6 +8,7 @@ import io.ycg000344.async.excel.constant.AsyncExcelConstant;
 import io.ycg000344.async.excel.constant.ParseEnum;
 import io.ycg000344.async.excel.handler.AsyncExportHandler;
 import io.ycg000344.async.excel.handler.AsyncImportHandler;
+import io.ycg000344.async.excel.handler.FileTransferFunc;
 import io.ycg000344.async.excel.properties.AsyncExcelProperties;
 import io.ycg000344.async.excel.runner.AsyncExcelExportRunner;
 import io.ycg000344.async.excel.runner.AsyncExcelImportRunner;
@@ -45,8 +46,9 @@ public class AsyncExcelTaskManager {
         return build;
     }
 
-    public TaskInfo createImportTask(AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, RedisTemplate redisTemplate) {
+    public TaskInfo createImportTask(FileTransferFunc func, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, RedisTemplate redisTemplate) throws Exception {
         TaskInfo build = newImportTask();
+        func.transferTo(build.getSourceFilePath());
         AsyncExcelImportRunner runner = new AsyncExcelImportRunner(
                 build,
                 handler,
