@@ -1,4 +1,4 @@
-package io.ycg000344.async.excel.bean;
+package cn.async.excel.bean;
 
 import lombok.Builder;
 import lombok.Data;

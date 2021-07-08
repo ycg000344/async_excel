@@ -1,4 +1,4 @@
-package io.ycg000344.async.excel.properties;
+package cn.async.excel.properties;
 
 
 import cn.hutool.core.util.StrUtil;
