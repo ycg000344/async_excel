@@ -1,6 +1,6 @@
-package cn.async.excel.bean;
+package io.github.ycg000344.async.excel.bean;
 
-import cn.async.excel.constant.ParseEnum;
+import io.github.ycg000344.async.excel.constant.ParseEnum;
 import lombok.Builder;
 import lombok.Data;
 

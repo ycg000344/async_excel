@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cn.async.excel.manager.AsyncExcelAutoConfig
+  io.github.ycg000344.async.excel.manager.AsyncExcelAutoConfig

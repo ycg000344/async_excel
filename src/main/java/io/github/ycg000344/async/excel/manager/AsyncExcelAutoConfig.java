@@ -1,6 +1,6 @@
-package cn.async.excel.manager;
+package io.github.ycg000344.async.excel.manager;
 
-import cn.async.excel.properties.AsyncExcelProperties;
+import io.github.ycg000344.async.excel.properties.AsyncExcelProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
-package cn.async.excel.bean;
+package io.github.ycg000344.async.excel.bean;
 
-import cn.async.excel.util.AsyncExcelUtils;
+import io.github.ycg000344.async.excel.util.AsyncExcelUtils;
 import cn.hutool.json.JSONUtil;
 import lombok.Builder;
 import org.springframework.data.redis.core.RedisTemplate;

@@ -1,9 +1,9 @@
-package cn.async.excel.util;
+package io.github.ycg000344.async.excel.util;
 
 import cn.hutool.core.io.file.FileNameUtil;
-import cn.async.excel.bean.TaskInfo;
-import cn.async.excel.bean.TaskProgress;
-import cn.async.excel.constant.AsyncExcelConstant;
+import io.github.ycg000344.async.excel.bean.TaskInfo;
+import io.github.ycg000344.async.excel.bean.TaskProgress;
+import io.github.ycg000344.async.excel.constant.AsyncExcelConstant;
 import org.springframework.data.redis.core.RedisTemplate;
 
 public class AsyncExcelUtils {

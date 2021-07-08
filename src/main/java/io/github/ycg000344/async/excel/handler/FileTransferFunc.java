@@ -1,4 +1,4 @@
-package cn.async.excel.handler;
+package io.github.ycg000344.async.excel.handler;
 
 @FunctionalInterface
 public interface FileTransferFunc {
