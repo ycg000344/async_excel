@@ -16,6 +16,10 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author lusheng
+ * @since 2021-07-09
+ */
 @Slf4j
 public class AsyncExcelExportRunner implements Runnable {
 
@@ -29,6 +33,11 @@ public class AsyncExcelExportRunner implements Runnable {
     private AsyncExcelExportRunner() {
     }
 
+    /**
+     * @param taskInfo             任务信息
+     * @param handlers             处理
+     * @param taskProcessCacheFunc 更新任务进度
+     */
     public AsyncExcelExportRunner(TaskInfo taskInfo, List<AsyncExportHandler> handlers, TaskProcessCacheFunc taskProcessCacheFunc) {
 
         Assert.notNull(taskInfo);

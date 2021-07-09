@@ -21,10 +21,20 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * @author lusheng
+ * @since 2021-07-09
+ */
 public class AsyncExcelTaskManager {
 
     private static String baseDir = System.getProperty("user.dir") + File.separator;
 
+    /**
+     * @param handler              处理
+     * @param service              线程池
+     * @param taskProcessCacheFunc 更新任务进度
+     * @return 任务信息
+     */
     public TaskInfo createExportTask(AsyncExportHandler handler, Executor service, TaskProcessCacheFunc taskProcessCacheFunc) {
         TaskInfo build = newExportTask();
         AsyncExcelExportRunner runner = new AsyncExcelExportRunner(
@@ -36,6 +46,12 @@ public class AsyncExcelTaskManager {
         return build;
     }
 
+    /**
+     * @param handlers             处理
+     * @param service              线程池
+     * @param taskProcessCacheFunc 更新任务进度
+     * @return 任务信息
+     */
     public TaskInfo createExportTask(List<AsyncExportHandler> handlers, Executor service, TaskProcessCacheFunc taskProcessCacheFunc) {
         TaskInfo build = newExportTask();
         AsyncExcelExportRunner runner = new AsyncExcelExportRunner(
@@ -46,9 +62,18 @@ public class AsyncExcelTaskManager {
         return build;
     }
 
-    public TaskInfo createImportTask(FileTransferFunc func, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc) throws Exception {
+    /**
+     * @param fileTransferFunc     源文件转移至目标路径
+     * @param handler              处理
+     * @param service              线程池
+     * @param sqlSessionFactory    sqlsession
+     * @param taskProcessCacheFunc 任务进度
+     * @return 任务信息
+     * @throws Exception 异常
+     */
+    public TaskInfo createImportTask(FileTransferFunc fileTransferFunc, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc) throws Exception {
         TaskInfo build = newImportTask();
-        func.transferTo(build.getSourceFilePath());
+        fileTransferFunc.transferTo(build.getSourceFilePath());
         AsyncExcelImportRunner runner = new AsyncExcelImportRunner(
                 build,
                 handler,

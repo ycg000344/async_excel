@@ -6,6 +6,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author lusheng
+ * @since 2021-07-09
+ */
 @Configuration
 @EnableConfigurationProperties(AsyncExcelProperties.class)
 @Slf4j

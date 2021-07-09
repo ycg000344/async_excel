@@ -5,6 +5,10 @@ import io.github.ycg000344.async.excel.constant.ExportTitleEnum;
 
 import java.util.Map;
 
+/**
+ * @author lusheng
+ * @since 2021-07-09
+ */
 public abstract class StaticExportHandler implements AsyncExportHandler {
 
     @Override

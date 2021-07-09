@@ -28,6 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author lusheng
+ * @since 2021-07-09
+ */
 @Slf4j
 public class BatchSheetExportService extends BaseExportService {
 
@@ -46,13 +50,20 @@ public class BatchSheetExportService extends BaseExportService {
     protected short rowHeight;
     protected int index;
 
-    public BatchSheetExportService(String taskId, int totalSheets, TaskInfo taskInfo, TaskProcessCacheFunc redisTemplate) {
+    /**
+     * @param taskId               任务ID
+     * @param totalSheets          总sheet数量
+     * @param taskInfo             任务信息
+     * @param taskProcessCacheFunc 更新任务进度
+     */
+    public BatchSheetExportService(String taskId, int totalSheets, TaskInfo taskInfo, TaskProcessCacheFunc taskProcessCacheFunc) {
         this.taskId = taskId;
         this.totalSheets = totalSheets;
         this.taskInfo = taskInfo;
-        this.taskProcessCacheFunc = redisTemplate;
+        this.taskProcessCacheFunc = taskProcessCacheFunc;
         initial();
     }
+
 
     private void initial() {
         this.workbook = new XSSFWorkbook();
@@ -95,6 +106,11 @@ public class BatchSheetExportService extends BaseExportService {
         return sheet;
     }
 
+    /**
+     * @param sheetIndex 当前sheet索引
+     * @param handler    处理
+     * @param sheet      当前sheet
+     */
     public void export(int sheetIndex, AsyncExportHandler handler, Sheet sheet) {
         int page = 1;
         Map param = handler.param();
@@ -139,10 +155,17 @@ public class BatchSheetExportService extends BaseExportService {
         return sheet;
     }
 
+    /**
+     * @return Workbook
+     */
     public Workbook get() {
         return this.workbook;
     }
 
+    /**
+     * @param handler 处理
+     * @return sheet
+     */
     public Sheet create(AsyncExportHandler handler) {
         if (handler.titleType().equals(ExportTitleEnum.STATIC)) {
             return create(handler.entity(), handler.pojoClass());
@@ -150,6 +173,11 @@ public class BatchSheetExportService extends BaseExportService {
         return create(handler.entity(), handler.title());
     }
 
+    /**
+     * @param entity    导出配置
+     * @param pojoClass 静态表头
+     * @return 表头数据
+     */
     public List<ExcelExportEntity> createExcelExportEntityList(ExportParams entity, Class<?> pojoClass) {
         try {
             List<ExcelExportEntity> excelParams = new ArrayList();

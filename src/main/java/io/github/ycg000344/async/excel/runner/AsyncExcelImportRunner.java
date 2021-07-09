@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author lusheng
+ * @since 2021-07-09
+ */
 @Slf4j
 public class AsyncExcelImportRunner implements Runnable {
 
@@ -47,7 +51,15 @@ public class AsyncExcelImportRunner implements Runnable {
     private final int rowCacheSize = 100;
     private final int bufferSize = 1024 << 2;
 
+    private AsyncExcelImportRunner() {
+    }
 
+    /**
+     * @param taskInfo             任务信息
+     * @param handler              处理
+     * @param sqlSessionFactory    sqlsession
+     * @param taskProcessCacheFunc 更新任务进度
+     */
     public AsyncExcelImportRunner(TaskInfo taskInfo,
                                   AsyncImportHandler handler,
                                   SqlSessionFactory sqlSessionFactory,
