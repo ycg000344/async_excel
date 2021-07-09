@@ -4,7 +4,7 @@ import cn.hutool.core.io.file.FileNameUtil;
 import io.github.ycg000344.async.excel.bean.TaskInfo;
 import io.github.ycg000344.async.excel.bean.TaskProgress;
 import io.github.ycg000344.async.excel.constant.AsyncExcelConstant;
-import org.springframework.data.redis.core.RedisTemplate;
+import io.github.ycg000344.async.excel.handler.TaskProcessCacheFunc;
 
 public class AsyncExcelUtils {
 
@@ -12,7 +12,7 @@ public class AsyncExcelUtils {
         return AsyncExcelConstant.XLSX.equalsIgnoreCase(FileNameUtil.extName(filename));
     }
 
-    public static void updateTaskProcess(RedisTemplate redisTemplate, TaskInfo taskInfo, Double percent, Integer total, Integer error) {
+    public static void updateTaskProcess(TaskProcessCacheFunc taskProcessCacheFunc, TaskInfo taskInfo, Double percent, Integer total, Integer error) {
         TaskProgress.builder()
                 .taskInfo(taskInfo)
                 .percent(percent)
@@ -20,11 +20,7 @@ public class AsyncExcelUtils {
                 .error(error)
                 .success(total - error)
                 .build()
-                .update(redisTemplate);
-    }
-
-    public static String taskProgressRedisKey(String taskId) {
-        return String.format("async:excel:%s", taskId);
+                .update(taskProcessCacheFunc);
     }
 
 }

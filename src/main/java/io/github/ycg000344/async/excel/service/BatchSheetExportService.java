@@ -10,18 +10,18 @@ import cn.afterturn.easypoi.excel.export.base.BaseExportService;
 import cn.afterturn.easypoi.exception.excel.ExcelExportException;
 import cn.afterturn.easypoi.exception.excel.enums.ExcelExportEnum;
 import cn.afterturn.easypoi.util.PoiPublicUtil;
-import io.github.ycg000344.async.excel.util.AsyncExcelUtils;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import io.github.ycg000344.async.excel.bean.TaskInfo;
 import io.github.ycg000344.async.excel.constant.ExportTitleEnum;
 import io.github.ycg000344.async.excel.handler.AsyncExportHandler;
+import io.github.ycg000344.async.excel.handler.TaskProcessCacheFunc;
+import io.github.ycg000344.async.excel.util.AsyncExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class BatchSheetExportService extends BaseExportService {
     protected int totalSheets;
 
     protected TaskInfo taskInfo;
-    protected RedisTemplate redisTemplate;
+    protected TaskProcessCacheFunc taskProcessCacheFunc;
 
     protected Workbook workbook;
     protected List<ExcelExportEntity> excelParams;
@@ -46,11 +46,11 @@ public class BatchSheetExportService extends BaseExportService {
     protected short rowHeight;
     protected int index;
 
-    public BatchSheetExportService(String taskId, int totalSheets, TaskInfo taskInfo, RedisTemplate redisTemplate) {
+    public BatchSheetExportService(String taskId, int totalSheets, TaskInfo taskInfo, TaskProcessCacheFunc redisTemplate) {
         this.taskId = taskId;
         this.totalSheets = totalSheets;
         this.taskInfo = taskInfo;
-        this.redisTemplate = redisTemplate;
+        this.taskProcessCacheFunc = redisTemplate;
         initial();
     }
 
@@ -112,7 +112,7 @@ public class BatchSheetExportService extends BaseExportService {
         double row = (double) page / (double) pages;
         double sheet = (double) sheetIndex / (double) this.totalSheets;
         double v = (row * sheet) / (100 * 100);
-        AsyncExcelUtils.updateTaskProcess(redisTemplate, taskInfo, v, 0, 0);
+        AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, v, 0, 0);
     }
 
     private void close(Sheet sheet) {

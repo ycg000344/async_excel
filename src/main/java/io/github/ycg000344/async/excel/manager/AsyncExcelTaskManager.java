@@ -1,19 +1,19 @@
 package io.github.ycg000344.async.excel.manager;
 
-import io.github.ycg000344.async.excel.bean.TaskInfo;
-import io.github.ycg000344.async.excel.constant.AsyncExcelConstant;
-import io.github.ycg000344.async.excel.constant.ParseEnum;
-import io.github.ycg000344.async.excel.handler.FileTransferFunc;
-import io.github.ycg000344.async.excel.runner.AsyncExcelExportRunner;
-import io.github.ycg000344.async.excel.runner.AsyncExcelImportRunner;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import io.github.ycg000344.async.excel.bean.TaskInfo;
+import io.github.ycg000344.async.excel.constant.AsyncExcelConstant;
+import io.github.ycg000344.async.excel.constant.ParseEnum;
 import io.github.ycg000344.async.excel.handler.AsyncExportHandler;
 import io.github.ycg000344.async.excel.handler.AsyncImportHandler;
+import io.github.ycg000344.async.excel.handler.FileTransferFunc;
+import io.github.ycg000344.async.excel.handler.TaskProcessCacheFunc;
 import io.github.ycg000344.async.excel.properties.AsyncExcelProperties;
+import io.github.ycg000344.async.excel.runner.AsyncExcelExportRunner;
+import io.github.ycg000344.async.excel.runner.AsyncExcelImportRunner;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.File;
 import java.util.Arrays;
@@ -25,35 +25,35 @@ public class AsyncExcelTaskManager {
 
     private static String baseDir = System.getProperty("user.dir") + File.separator;
 
-    public TaskInfo createExportTask(AsyncExportHandler handler, Executor service, RedisTemplate redisTemplate) {
+    public TaskInfo createExportTask(AsyncExportHandler handler, Executor service, TaskProcessCacheFunc taskProcessCacheFunc) {
         TaskInfo build = newExportTask();
         AsyncExcelExportRunner runner = new AsyncExcelExportRunner(
                 build,
                 Arrays.asList(handler),
-                redisTemplate
+                taskProcessCacheFunc
         );
         service.execute(runner);
         return build;
     }
 
-    public TaskInfo createExportTask(List<AsyncExportHandler> handlers, Executor service, RedisTemplate redisTemplate) {
+    public TaskInfo createExportTask(List<AsyncExportHandler> handlers, Executor service, TaskProcessCacheFunc taskProcessCacheFunc) {
         TaskInfo build = newExportTask();
         AsyncExcelExportRunner runner = new AsyncExcelExportRunner(
                 build,
                 handlers,
-                redisTemplate);
+                taskProcessCacheFunc);
         service.execute(runner);
         return build;
     }
 
-    public TaskInfo createImportTask(FileTransferFunc func, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, RedisTemplate redisTemplate) throws Exception {
+    public TaskInfo createImportTask(FileTransferFunc func, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc) throws Exception {
         TaskInfo build = newImportTask();
         func.transferTo(build.getSourceFilePath());
         AsyncExcelImportRunner runner = new AsyncExcelImportRunner(
                 build,
                 handler,
                 sqlSessionFactory,
-                redisTemplate
+                taskProcessCacheFunc
         );
         service.submit(runner);
         return build;

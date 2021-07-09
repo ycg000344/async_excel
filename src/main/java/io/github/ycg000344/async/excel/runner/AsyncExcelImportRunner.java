@@ -1,12 +1,13 @@
 package io.github.ycg000344.async.excel.runner;
 
-import io.github.ycg000344.async.excel.util.AsyncExcelUtils;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.monitorjbl.xlsx.StreamingReader;
 import io.github.ycg000344.async.excel.bean.ImportHandlerResult;
 import io.github.ycg000344.async.excel.bean.TaskInfo;
 import io.github.ycg000344.async.excel.handler.AsyncImportHandler;
+import io.github.ycg000344.async.excel.handler.TaskProcessCacheFunc;
+import io.github.ycg000344.async.excel.util.AsyncExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -15,7 +16,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class AsyncExcelImportRunner implements Runnable {
     protected TaskInfo taskInfo;
     protected SqlSessionFactory sqlSessionFactory;
     protected AsyncImportHandler handler;
-    protected RedisTemplate redisTemplate;
+    protected TaskProcessCacheFunc taskProcessCacheFunc;
 
     protected String taskId;
     protected String sourceExcelFile;
@@ -51,17 +51,17 @@ public class AsyncExcelImportRunner implements Runnable {
     public AsyncExcelImportRunner(TaskInfo taskInfo,
                                   AsyncImportHandler handler,
                                   SqlSessionFactory sqlSessionFactory,
-                                  RedisTemplate redisTemplate) {
+                                  TaskProcessCacheFunc taskProcessCacheFunc) {
 
         Assert.notNull(taskInfo);
         Assert.notNull(handler);
         Assert.notNull(sqlSessionFactory);
-        Assert.notNull(redisTemplate);
+        Assert.notNull(taskProcessCacheFunc);
 
         this.taskInfo = taskInfo;
         this.handler = handler;
         this.sqlSessionFactory = sqlSessionFactory;
-        this.redisTemplate = redisTemplate;
+        this.taskProcessCacheFunc = taskProcessCacheFunc;
 
         initial();
     }
@@ -80,7 +80,7 @@ public class AsyncExcelImportRunner implements Runnable {
     @Override
     public void run() {
         log.info("task:{},[parse],start.", this.taskId);
-        AsyncExcelUtils.updateTaskProcess(redisTemplate, taskInfo, 0d, 0, 0);
+        AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 0d, 0, 0);
         SqlSession sqlSession = null;
         try (
                 Workbook workbook = StreamingReader.builder()
@@ -101,7 +101,7 @@ public class AsyncExcelImportRunner implements Runnable {
         }
         sqlSession = null;
         if (CollectionUtil.isEmpty(errorRows) || !handler.needFailure()) {
-            AsyncExcelUtils.updateTaskProcess(redisTemplate, taskInfo, 100d, this.sheetTotalRowNum, 0);
+            AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 100d, this.sheetTotalRowNum, 0);
         } else {
             log.info("task:{}, [failure],start.", this.taskId);
             this.createFailureFile();
@@ -123,7 +123,7 @@ public class AsyncExcelImportRunner implements Runnable {
         } catch (Exception e) {
             log.error("task:{},[createFailureFile],exception:{}", this.taskId, e);
         }
-        AsyncExcelUtils.updateTaskProcess(redisTemplate, taskInfo, 100d, this.sheetTotalRowNum, this.errorRows.size());
+        AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 100d, this.sheetTotalRowNum, this.errorRows.size());
     }
 
     private Workbook createBook() {
@@ -174,7 +174,7 @@ public class AsyncExcelImportRunner implements Runnable {
 
     private void updateProgress(int rowNum) {
         if ((1 & rowNum) == 1) return;
-        AsyncExcelUtils.updateTaskProcess(this.redisTemplate, taskInfo,
+        AsyncExcelUtils.updateTaskProcess(this.taskProcessCacheFunc, taskInfo,
                 Math.min((rowNum * 1.0d / this.sheetTotalRowNum * 100), 90d),
                 this.sheetTotalRowNum, 0);
     }

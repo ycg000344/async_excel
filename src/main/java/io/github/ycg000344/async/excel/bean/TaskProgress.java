@@ -1,11 +1,7 @@
 package io.github.ycg000344.async.excel.bean;
 
-import io.github.ycg000344.async.excel.util.AsyncExcelUtils;
-import cn.hutool.json.JSONUtil;
+import io.github.ycg000344.async.excel.handler.TaskProcessCacheFunc;
 import lombok.Builder;
-import org.springframework.data.redis.core.RedisTemplate;
-
-import java.time.Duration;
 
 @Builder
 public class TaskProgress {
@@ -16,16 +12,8 @@ public class TaskProgress {
     private Integer error;
     private Integer success;
 
-
-    public void update(RedisTemplate redisTemplate) {
-        redisTemplate.opsForValue().set(AsyncExcelUtils.taskProgressRedisKey(this.taskInfo.getTaskId()), value(), timeout());
+    public void update(TaskProcessCacheFunc taskProcessCacheFunc) {
+        taskProcessCacheFunc.updateTaskProcess(this.taskInfo.getTaskId(), this);
     }
 
-    private Duration timeout() {
-        return Duration.ofHours(1l);
-    }
-
-    private String value() {
-        return JSONUtil.parse(this).toString();
-    }
 }
