@@ -2,6 +2,32 @@
 
 异步处理 Excel Starter
 
+> 背景：
+> 
+> 现在后台管理项目里或多或少会有 `Excel`的导入导出需求，进行导入、导出时采取同步的方式代码写起来比较无聊。
+> 
+> 组长给了要求：
+> 
+> 1. 采取异步的方式
+> 2. 导入时的功能要求：
+> 
+>       2.1 以流的方式来操作 `Excel`，按行读取`Excel`进行操作
+>    
+>       2.2 有事务控制，提交、回滚
+> 
+>       2.3 不符合要求的数据要生成一份新的 `Excel`
+> 
+> 
+> 3. 导入时的功能要求： 
+>
+>       3.1 导出时要分批次把数据写到  `Excel`
+> 
+>       3.2 支持多`sheet`导出
+> 
+> 4. 足够的抽象，便于不同的功能使用
+> 
+> 5. 要有进度
+
 ## Import
 
 特点：
@@ -25,7 +51,7 @@
     @Autowired
     AsyncExcelTaskManager manager;
     // 4. 创建任务
-    manager.createImportTask(AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, RedisTemplate redisTemplate);
+    manager.createImportTask(FileTransferFunc fileTransferFunc, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc);
 ```
 
 ## Export
@@ -52,5 +78,5 @@
     @Autowired
     AsyncExcelTaskManager manager;
     // 4. 创建任务
-    manager.createExportTask(AsyncExportHandler handler, Executor service, RedisTemplate redisTemplate);
+    manager.createExportTask(AsyncExportHandler handler, Executor service, TaskProcessCacheFunc taskProcessCacheFunc);
 ```
