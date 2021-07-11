@@ -39,11 +39,6 @@ public class AsyncExcelExportRunner implements Runnable {
      * @param taskProcessCacheFunc 更新任务进度
      */
     public AsyncExcelExportRunner(TaskInfo taskInfo, List<AsyncExportHandler> handlers, TaskProcessCacheFunc taskProcessCacheFunc) {
-
-        Assert.notNull(taskInfo);
-        Assert.notNull(handlers);
-        Assert.notNull(taskProcessCacheFunc);
-
         this.taskInfo = taskInfo;
         this.handlers = handlers;
         this.taskProcessCacheFunc = taskProcessCacheFunc;
@@ -57,7 +52,7 @@ public class AsyncExcelExportRunner implements Runnable {
 
     @Override
     public void run() {
-        log.info("task:{},start.", this.taskId);
+        log.info("[Async Excel] taskId: {}, start.", this.taskId);
         AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 0d, 0, 0);
         Workbook workbook = null;
         OutputStream outputStream = null;
@@ -71,16 +66,16 @@ public class AsyncExcelExportRunner implements Runnable {
             outputStream = new FileOutputStream(file);
             workbook.write(outputStream);
             outputStream.flush();
-            log.info("task:{},success.", this.taskId);
+            log.info("[Async Excel] taskId: {}, success.", this.taskId);
         } catch (Exception e) {
-            log.error("task:{},error:{}", this.taskId, e);
+            log.error("[Async Excel] taskId: {}, Exception:{}", this.taskId, e);
         } finally {
             try {
                 AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 100d, 0, 0);
                 if (Objects.nonNull(workbook)) workbook.close();
                 if (Objects.nonNull(outputStream)) outputStream.close();
             } catch (Exception e) {
-                log.error("task:{},error:{}", this.taskId, e);
+                log.error("[Async Excel] taskId: {}, Exception: {}", this.taskId, e);
             }
         }
     }

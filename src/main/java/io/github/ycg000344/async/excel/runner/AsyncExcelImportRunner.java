@@ -64,12 +64,6 @@ public class AsyncExcelImportRunner implements Runnable {
                                   AsyncImportHandler handler,
                                   SqlSessionFactory sqlSessionFactory,
                                   TaskProcessCacheFunc taskProcessCacheFunc) {
-
-        Assert.notNull(taskInfo);
-        Assert.notNull(handler);
-        Assert.notNull(sqlSessionFactory);
-        Assert.notNull(taskProcessCacheFunc);
-
         this.taskInfo = taskInfo;
         this.handler = handler;
         this.sqlSessionFactory = sqlSessionFactory;
@@ -91,7 +85,7 @@ public class AsyncExcelImportRunner implements Runnable {
 
     @Override
     public void run() {
-        log.info("task:{},[parse],start.", this.taskId);
+        log.info("[Async Excel] taskId: {}, [parse] , start.", this.taskId);
         AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 0d, 0, 0);
         SqlSession sqlSession = null;
         try (
@@ -106,18 +100,18 @@ public class AsyncExcelImportRunner implements Runnable {
             handler.getMapper(sqlSession);
             sheet.rowIterator().forEachRemaining(this::accept);
             sqlSession.commit();
-            log.info("task:{},[parse],success.", this.taskId);
+            log.info("[Async Excel] taskId: {}, [parse] , success.", this.taskId);
         } catch (Exception e) {
-            log.error("task:{},[parse],exception:{}", this.taskId, e);
+            log.error("[Async Excel] taskId: {}, [parse] , exception:{}", this.taskId, e);
             if (Objects.nonNull(sqlSession)) sqlSession.rollback();
         }
         sqlSession = null;
         if (CollectionUtil.isEmpty(errorRows) || !handler.needFailure()) {
             AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 100d, this.sheetTotalRowNum, 0);
         } else {
-            log.info("task:{}, [failure],start.", this.taskId);
+            log.info("[Async Excel] taskId: {}, [failure] , start.", this.taskId);
             this.createFailureFile();
-            log.info("task:{}, [failure],success.", this.taskId);
+            log.info("[Async Excel] taskId: {}, [failure] , success.", this.taskId);
         }
     }
 
@@ -133,7 +127,7 @@ public class AsyncExcelImportRunner implements Runnable {
             workbook.write(outputStream);
             outputStream.flush();
         } catch (Exception e) {
-            log.error("task:{},[createFailureFile],exception:{}", this.taskId, e);
+            log.error("[Async Excel] taskId: {}, [createFailureFile] , exception: {}", this.taskId, e);
         }
         AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 100d, this.sheetTotalRowNum, this.errorRows.size());
     }

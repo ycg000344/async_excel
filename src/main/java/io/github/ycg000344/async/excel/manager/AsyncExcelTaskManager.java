@@ -14,6 +14,7 @@ import io.github.ycg000344.async.excel.properties.AsyncExcelProperties;
 import io.github.ycg000344.async.excel.runner.AsyncExcelExportRunner;
 import io.github.ycg000344.async.excel.runner.AsyncExcelImportRunner;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.util.Assert;
 
 import java.io.File;
 import java.util.Arrays;
@@ -36,6 +37,10 @@ public class AsyncExcelTaskManager {
      * @return 任务信息
      */
     public TaskInfo createExportTask(AsyncExportHandler handler, Executor service, TaskProcessCacheFunc taskProcessCacheFunc) {
+        Assert.notNull(handler);
+        Assert.notNull(service);
+        Assert.notNull(taskProcessCacheFunc);
+
         TaskInfo build = newExportTask();
         AsyncExcelExportRunner runner = new AsyncExcelExportRunner(
                 build,
@@ -53,6 +58,10 @@ public class AsyncExcelTaskManager {
      * @return 任务信息
      */
     public TaskInfo createExportTask(List<AsyncExportHandler> handlers, Executor service, TaskProcessCacheFunc taskProcessCacheFunc) {
+        Assert.notEmpty(handlers);
+        Assert.notNull(service);
+        Assert.notNull(taskProcessCacheFunc);
+
         TaskInfo build = newExportTask();
         AsyncExcelExportRunner runner = new AsyncExcelExportRunner(
                 build,
@@ -72,6 +81,12 @@ public class AsyncExcelTaskManager {
      * @throws Exception 异常
      */
     public TaskInfo createImportTask(FileTransferFunc fileTransferFunc, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc) throws Exception {
+        Assert.notNull(fileTransferFunc);
+        Assert.notNull(handler);
+        Assert.notNull(service);
+        Assert.notNull(sqlSessionFactory);
+        Assert.notNull(taskProcessCacheFunc);
+
         TaskInfo build = newImportTask();
         fileTransferFunc.transferTo(build.getSourceFilePath());
         AsyncExcelImportRunner runner = new AsyncExcelImportRunner(
