@@ -2,6 +2,8 @@
 
 异步处理 Excel Starter
 
+
+
 > 背景：
 > 
 > 现在后台管理项目里或多或少会有 `Excel`的导入导出需求，进行导入、导出时采取同步的方式代码写起来比较无聊。
@@ -27,6 +29,42 @@
 > 4. 足够的抽象，便于不同的功能使用
 > 
 > 5. 要有进度
+
+
+
+## 安装
+
+
+
+### Maven
+
+在项目的pom.xml的dependencies中加入以下内容:
+
+```xml
+<dependency>
+    <groupId>io.github.ycg000344</groupId>
+    <artifactId>async-excel-spring-boot-starter</artifactId>
+    <version>1.1.0</version>
+</dependency>
+```
+
+*注：若项目内引入了`mybatis`，需要将本项目中的`mybatis`移除*
+
+```xml
+<dependency>
+    <groupId>io.github.ycg000344</groupId>
+    <artifactId>async-excel-spring-boot-starter</artifactId>
+    <version>1.1.0</version>
+    <exclusions>
+      <exclusion>
+						<groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+      </exclusion>
+    </exclusions>
+</dependency>
+```
+
+
 
 ## Import
 
