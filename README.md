@@ -57,8 +57,8 @@
     <version>1.1.0</version>
     <exclusions>
       <exclusion>
-						<groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
+	      <groupId>org.mybatis</groupId>
+	      <artifactId>mybatis</artifactId>
       </exclusion>
     </exclusions>
 </dependency>
