@@ -25,7 +25,7 @@ public class TaskProgress {
      */
     public void update(TaskProcessCacheFunc taskProcessCacheFunc) {
         try {
-            log.info("[Async Excel] taskId: {}, percent: {}", this.taskInfo.getTaskId(), this.percent);
+            log.debug("[Async Excel] taskId: {}, percent: {}", this.taskInfo.getTaskId(), this.percent);
             taskProcessCacheFunc.updateTaskProcess(this.taskInfo.getTaskId(), this);
         } catch (Exception e) {
             log.error("[Async Excel] taskId: {},Exception: {}", this.taskInfo.getTaskId(), e);

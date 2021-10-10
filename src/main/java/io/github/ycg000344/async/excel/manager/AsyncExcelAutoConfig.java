@@ -19,7 +19,7 @@ public class AsyncExcelAutoConfig {
     public AsyncExcelTaskManager asyncExcelTaskManager(AsyncExcelProperties asyncExcelProperties) {
         AsyncExcelTaskManager manager = new AsyncExcelTaskManager();
         manager.afterPropertiesSet(asyncExcelProperties);
-        log.info(">>> initial AsyncExcelTaskManager finish.");
+        log.debug(">>> initial AsyncExcelTaskManager finish.");
         return manager;
     }
 

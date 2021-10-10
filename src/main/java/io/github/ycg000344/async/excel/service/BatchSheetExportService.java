@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
@@ -42,7 +43,7 @@ public class BatchSheetExportService extends BaseExportService {
     protected TaskInfo taskInfo;
     protected TaskProcessCacheFunc taskProcessCacheFunc;
 
-    protected Workbook workbook;
+    protected SXSSFWorkbook workbook;
     protected List<ExcelExportEntity> excelParams;
     protected ExportParams entity;
     protected int titleHeight;
@@ -66,7 +67,7 @@ public class BatchSheetExportService extends BaseExportService {
 
 
     private void initial() {
-        this.workbook = new XSSFWorkbook();
+        this.workbook = new SXSSFWorkbook();
     }
 
     private Sheet create(ExportParams entity, Class pojoClass) {
@@ -158,7 +159,7 @@ public class BatchSheetExportService extends BaseExportService {
     /**
      * @return Workbook
      */
-    public Workbook get() {
+    public SXSSFWorkbook get() {
         return this.workbook;
     }
 

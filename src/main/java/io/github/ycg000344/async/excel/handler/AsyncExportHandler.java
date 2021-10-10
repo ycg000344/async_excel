@@ -4,11 +4,14 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.log.Log;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.github.ycg000344.async.excel.constant.ExportTitleEnum;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,8 @@ import java.util.Map;
 public interface AsyncExportHandler {
 
     int PAGE_SIZE = 100;
+    Log LOG = Log.get();
+
 
     /**
      * @param param SQl 查询参数
@@ -61,11 +66,15 @@ public interface AsyncExportHandler {
      * @return 查询结果
      */
     default List selectForExport(Map param, int page) {
+        Date start = new Date();
         PageInfo pageInfo = PageHelper.startPage(page, PAGE_SIZE).doSelectPageInfo(
                 () -> doSelect(param)
         );
+        LOG.debug("[Async Excel] , sql use time: {}", DateUtil.formatBetween(start, new Date()));
         List list = pageInfo.getPages() >= page ? pageInfo.getList() : new ArrayList<>();
-        return conversion(list);
+        List conversion = conversion(list);
+        LOG.debug("[Async Excel] , selectForExport use time: {}", DateUtil.formatBetween(start, new Date()));
+        return conversion;
     }
 
     /**
