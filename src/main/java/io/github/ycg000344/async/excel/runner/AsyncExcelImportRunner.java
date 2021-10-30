@@ -15,8 +15,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.util.Assert;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -120,20 +119,37 @@ public class AsyncExcelImportRunner implements Runnable {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
         }
-        try (
-                Workbook workbook = createBook();
-                OutputStream outputStream = new FileOutputStream(file)
-        ) {
+        SXSSFWorkbook workbook = null;
+        OutputStream outputStream = null;
+        try {
+            workbook = createBook();
+            outputStream = new FileOutputStream(file);
             workbook.write(outputStream);
+            workbook.dispose();
+
             outputStream.flush();
         } catch (Exception e) {
             log.error("[Async Excel] taskId: {}, [createFailureFile] , exception: {}", this.taskId, e);
+        } finally {
+            try {
+                if (Objects.nonNull(workbook)) {
+                    workbook.dispose();
+                    workbook.close();
+                    workbook = null;
+                }
+                if (Objects.nonNull(outputStream)) {
+                    outputStream.close();
+                    outputStream = null;
+                }
+            } catch (Exception e) {
+                log.error("[Async Excel] taskId: {}, [createFailureFile] , exception: {}", this.taskId, e);
+            }
         }
         AsyncExcelUtils.updateTaskProcess(taskProcessCacheFunc, taskInfo, 100d, this.sheetTotalRowNum, this.errorRows.size());
     }
 
-    private Workbook createBook() {
-        Workbook workbook = new XSSFWorkbook();
+    private SXSSFWorkbook createBook() {
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         int r = 0;
         Row row = sheet.createRow(r++);
@@ -162,6 +178,9 @@ public class AsyncExcelImportRunner implements Runnable {
             cell = row.createCell(c++);
             cell.setCellValue(title);
         }
+        cell = row.createCell(c++);
+        String last = "异常原因";
+        cell.setCellValue(last);
     }
 
     private void accept(Row row) {

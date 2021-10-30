@@ -1,5 +1,6 @@
 package io.github.ycg000344.async.excel.manager;
 
+import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -108,7 +109,9 @@ public class AsyncExcelTaskManager {
     }
 
     private String taskId() {
-        return IdUtil.getSnowflake(1, 1).nextIdStr();
+        String idStr = IdUtil.getSnowflake(1, 1).nextIdStr();
+        String format = DatePattern.PURE_DATETIME_MS_FORMAT.format(DateUtil.date());
+        return format + idStr;
     }
 
     private TaskInfo newImportTask() {

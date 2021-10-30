@@ -6,9 +6,11 @@ import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
-import cn.afterturn.easypoi.excel.export.base.BaseExportService;
+import cn.afterturn.easypoi.excel.export.ExcelExportService;
+import cn.afterturn.easypoi.excel.export.styler.IExcelExportStyler;
 import cn.afterturn.easypoi.exception.excel.ExcelExportException;
 import cn.afterturn.easypoi.exception.excel.enums.ExcelExportEnum;
+import cn.afterturn.easypoi.util.PoiExcelGraphDataUtil;
 import cn.afterturn.easypoi.util.PoiPublicUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
@@ -22,10 +24,11 @@ import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +37,7 @@ import java.util.Map;
  * @since 2021-07-09
  */
 @Slf4j
-public class BatchSheetExportService extends BaseExportService {
+public class BatchSheetExportService extends ExcelExportService {
 
 
     protected String taskId;
@@ -82,7 +85,40 @@ public class BatchSheetExportService extends BaseExportService {
         super.type = entity.getType();
         Sheet sheet = createSheet();
         if (entity.getMaxNum() == 0) entity.setMaxNum(ExcelExportUtil.USE_SXSSF_LIMIT);
+        insertDataToSheet(workbook, entity, excelParams, null, sheet);
         return sheet;
+    }
+
+    protected void insertDataToSheet(Workbook workbook, ExportParams entity,
+                                     List<ExcelExportEntity> entityList, Collection<?> dataSet,
+                                     Sheet sheet) {
+        try {
+            dataHandler = entity.getDataHandler();
+            if (dataHandler != null && dataHandler.getNeedHandlerFields() != null) {
+                needHandlerList = Arrays.asList(dataHandler.getNeedHandlerFields());
+            }
+            dictHandler = entity.getDictHandler();
+            // 创建表格样式
+            setExcelExportStyler((IExcelExportStyler) entity.getStyle()
+                    .getConstructor(Workbook.class).newInstance(workbook));
+            patriarch = PoiExcelGraphDataUtil.getDrawingPatriarch(sheet);
+            List<ExcelExportEntity> excelParams = new ArrayList<ExcelExportEntity>();
+            if (entity.isAddIndex()) {
+                excelParams.add(indexExcelEntity(entity));
+            }
+            excelParams.addAll(entityList);
+            sortAllParams(excelParams);
+            this.index = entity.isCreateHeadRows()
+                    ? createHeaderAndTitle(entity, sheet, workbook, excelParams) : 0;
+            titleHeight = index;
+            setCellWith(excelParams, sheet);
+            setColumnHidden(excelParams, sheet);
+            rowHeight = getRowHeight(excelParams);
+            setCurrentIndex(1);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new ExcelExportException(ExcelExportEnum.EXPORT_ERROR, e);
+        }
     }
 
     private Sheet createSheet() {
@@ -133,11 +169,12 @@ public class BatchSheetExportService extends BaseExportService {
     }
 
     private void close(Sheet sheet) {
-        if (this.entity.getFreezeCol() != 0) {
+        if (entity.getFreezeCol() != 0) {
             sheet.createFreezePane(this.entity.getFreezeCol(), this.titleHeight, this.entity.getFreezeCol(), this.titleHeight);
         }
-        this.mergeCells(sheet, this.excelParams, this.titleHeight);
-        this.addStatisticsRow(this.getExcelExportStyler().getStyles(true, (ExcelExportEntity) null), sheet);
+        mergeCells(sheet, this.excelParams, this.titleHeight);
+        // this.addStatisticsRow(this.getExcelExportStyler().getStyles(true, (ExcelExportEntity) null), sheet);
+        addStatisticsRow(getExcelExportStyler().getStyles(true, null), sheet);
     }
 
     private Sheet write(Sheet sheet, List data) {
@@ -162,6 +199,7 @@ public class BatchSheetExportService extends BaseExportService {
     public SXSSFWorkbook get() {
         return this.workbook;
     }
+
 
     /**
      * @param handler 处理
