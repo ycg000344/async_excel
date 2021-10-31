@@ -38,7 +38,7 @@
 ### Maven
 
 ```xml
-<async-excel-version.version>1.1.2</async-excel-versionversion>
+<async-excel-version.version>1.1.3</async-excel-versionversion>
 ```
 
 在项目的pom.xml的dependencies中加入以下内容:
@@ -121,3 +121,8 @@
     // 4. 创建任务
     manager.createExportTask(AsyncExportHandler handler, Executor service, TaskProcessCacheFunc taskProcessCacheFunc);
 ```
+
+
+## Async Excel Demo
+
+[demo](https://github.com/ycg000344/async_excel_demo)
