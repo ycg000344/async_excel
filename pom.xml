@@ -6,7 +6,7 @@
 
     <groupId>io.github.ycg000344</groupId>
     <artifactId>async-excel-spring-boot-starter</artifactId>
-    <version>1.1.4</version> <!-- -SNAPSHOT -->
+    <version>1.1.5</version> <!-- -SNAPSHOT -->
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Async Parse Excel Jar</description>
@@ -19,7 +19,7 @@
         <lombok.version>1.18.20</lombok.version>
         <easypoi.base.version>4.4.0</easypoi.base.version>
         <easypoi.annotation.version>4.4.0</easypoi.annotation.version>
-        <mybatis.version>3.5.0</mybatis.version>
+        <mybatis.version>3.5.6</mybatis.version>
         <xlsx-streamer.version>2.1.0</xlsx-streamer.version>
         <pagehelper.starter.version>1.4.0</pagehelper.starter.version>
         <boot.version>2.3.11.RELEASE</boot.version>
