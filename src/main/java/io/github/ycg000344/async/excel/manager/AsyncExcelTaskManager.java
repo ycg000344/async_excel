@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author lusheng
@@ -81,7 +80,7 @@ public class AsyncExcelTaskManager {
      * @return 任务信息
      * @throws Exception 异常
      */
-    public TaskInfo createImportTask(FileTransferFunc fileTransferFunc, AsyncImportHandler handler, ExecutorService service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc) throws Exception {
+    public TaskInfo createImportTask(FileTransferFunc fileTransferFunc, AsyncImportHandler handler, Executor service, SqlSessionFactory sqlSessionFactory, TaskProcessCacheFunc taskProcessCacheFunc) throws Exception {
         Assert.notNull(fileTransferFunc);
         Assert.notNull(handler);
         Assert.notNull(service);
@@ -96,7 +95,7 @@ public class AsyncExcelTaskManager {
                 sqlSessionFactory,
                 taskProcessCacheFunc
         );
-        service.submit(runner);
+        service.execute(runner);
         return build;
     }
 
