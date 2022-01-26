@@ -38,7 +38,7 @@
 ### Maven
 
 ```xml
-<async-excel-version.version>1.1.3</async-excel-versionversion>
+<async-excel-version.version>1.1.4</async-excel-versionversion>
 ```
 
 在项目的pom.xml的dependencies中加入以下内容:
